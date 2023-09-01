@@ -1,1 +1,40 @@
-/* Your code here */
+body {
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 10px;
+}
+
+#container {
+  width: 610px;
+  height: 610px;
+  display: flex;
+  flex-flow:row wrap;
+}
+#container div {
+  width: 200px;
+  height: 200px;
+}
+
+div#buttons {
+  padding: 20px;
+  display: flex;
+  width: 500px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+button {
+  font-size: 20px;
+}
+
+#square-0, #square-3, #square-6, #square-1, #square-4, #square-7 {
+  border-right: 5px solid black;
+}
+
+#square-0, #square-3, #square-1, #square-4, #square-2, #square-5 {
+  border-bottom: 5px solid black;
+}
