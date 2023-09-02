@@ -1,6 +1,5 @@
-// Your code here
-
 //tictactoe class
+//Game logic
 class Ttt {
   constructor() {
     //first player will be X;
@@ -106,9 +105,9 @@ class Ttt {
   }
 }
 
-//Testing
 const game = new Ttt();
 
+//Testing
 // console.log(game.grid);
 // game.makeAMove(0, 0);
 // game.makeAMove(0, 1);
@@ -119,7 +118,7 @@ const game = new Ttt();
 // console.log(game.checkWinner());
 
 
-
+//UI manipulation
 //window addeventlistener domloaded
 document.addEventListener('DOMContentLoaded', initiateGame);
 
@@ -195,12 +194,3 @@ function endCurrentGame(text) {
   h1.textContent = text;
   h1.style.visibility = "visible";
 }
-
-
-  //container addeventlistener click
-     //if current location is not null
-       //currentplayer
-       //get the div clicked
-       //add img src based on current player
-       //check winner or tie
-         //if not, switch player
