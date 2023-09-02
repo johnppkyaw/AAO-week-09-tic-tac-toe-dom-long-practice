@@ -118,50 +118,53 @@ const game = new Ttt();
 
 //UI manipulation
 //window addeventlistener domloaded
+let mainBoard;
+let newGameButton;
 
 document.addEventListener('DOMContentLoaded', initiateGame);
 
 function initiateGame() {
-  const mainBoard = document.querySelector("#container");
-  console.log(typeof mainBoard);
-  mainBoard.addEventListener('click', playTheRound);
+  mainBoard = document.querySelector("#container");
+  mainBoard.addEventListener('click', fillTheSquare);
 
-  const newGameButton = document.querySelector("#new-game");
+  newGameButton = document.querySelector("#new-game");
   newGameButton.disabled = true;
   newGameButton.addEventListener('click', createNewGame);
 }
 
+//fill the square
+function fillTheSquare(e) {
+  if(e.target.matches('div') && !e.target.hasAttribute("src")) {
+    playTheRound(e.target);
+  }
+}
+
 //Each click will place 'O' or 'X' on the clicked empty square
-function playTheRound(e) {
-  const target = e.target;
-  if (!target.hasAttribute("src")) {
-    const currentPlayer = game.currentPlayer;
-    target.innerHTML = markXOrO(currentPlayer);
+function playTheRound(target) {
+  const currentPlayer = game.currentPlayer;
+  target.innerHTML = markXOrO(currentPlayer);
 
-    //updates the game grid based on the square location
-    const squareNumber = Number(target.getAttribute("id").split('-')[1]);
-    const row = findRow(squareNumber);
-    const col = findCol(squareNumber);
-    game.makeAMove(row, col);
+  //updates the game grid based on the square location
+  const squareNumber = Number(target.getAttribute("id").split('-')[1]);
+  const row = findRow(squareNumber);
+  const col = findCol(squareNumber);
+  game.makeAMove(row, col);
 
-    //check if there is a winner;
-    game.checkWinner();
+  //check if there is a winner;
+  game.checkWinner();
+  if(game.winner) {
+    endCurrentGame(`Winner: ${game.winner}`)
+    newGameButton.disabled = false;
+  }
+
+  //when all squares are filled, check if there is a winner or a tie
+  if(game.emptySlots === 0) {
     if(game.winner) {
-      endCurrentGame(`Winner: ${game.winner}`)
-      const newGameButton = document.querySelector("#new-game");
-      newGameButton.disabled = false;
+      endCurrentGame(`Winner ${game.winner}`)
+    } else {
+      endCurrentGame(`Winner: None`)
     }
-
-    //when all squares are filled, check if there is a winner or a tie
-    if(game.emptySlots === 0) {
-      if(game.winner) {
-        endCurrentGame(`Winner ${game.winner}`)
-      } else {
-        endCurrentGame(`Winner: None`)
-      }
-      const newGameButton = document.querySelector("#new-game");
-      newGameButton.disabled = false;
-    }
+    newGameButton.disabled = false;
   }
 }
 
@@ -198,8 +201,9 @@ function findCol(number) {
   return (number - 8) + 2;
 }
 
+//Helper func - ending the current game
 function endCurrentGame(text) {
-  const mainBoard = document.querySelector("#container");mainBoard.removeEventListener('click', playTheRound);
+  mainBoard.removeEventListener('click', fillTheSquare);
   const h1 = document.querySelector('h1');
   h1.textContent = text;
   h1.style.visibility = "visible";
@@ -209,8 +213,6 @@ function endCurrentGame(text) {
 function createNewGame(e) {
   //prevent submitting when the button is clicked
   e.preventDefault();
-
-  const mainBoard = document.querySelector("#container");
 
   //do the following if the new game button is clickable
   if(e.target.disabled === false) {
@@ -235,6 +237,6 @@ function createNewGame(e) {
     }
 
     //add the event listener again to the main board
-    mainBoard.addEventListener('click', playTheRound);
+    mainBoard.addEventListener('click', fillTheSquare);
   }
 }
