@@ -1,3 +1,7 @@
+h1 {
+  visibility: hidden;
+}
+
 body {
   width: 800px;
   display: flex;
@@ -14,7 +18,8 @@ body {
   display: flex;
   flex-flow:row wrap;
 }
-#container div {
+
+#container div, img {
   width: 200px;
   height: 200px;
 }

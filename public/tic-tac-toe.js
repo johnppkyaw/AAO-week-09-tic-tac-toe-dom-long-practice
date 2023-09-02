@@ -3,7 +3,8 @@
 //tictactoe class
 class Ttt {
   constructor() {
-    this.currentPlayer = "O";
+    //first player will be X;
+    this.currentPlayer = "X";
     this.grid = this.createGrid();
     this.emptySlots = 9;
     this.winner = false;
@@ -11,6 +12,7 @@ class Ttt {
 
   announce() {
     console.log('Current player:', this.currentPlayer);
+    return;
   }
 
   createGrid() {
@@ -41,32 +43,31 @@ class Ttt {
   }
 
   checkWinner() {
-    const horizontalOWin = this.checkHorizontalWin('O');
     const horizontalXWin = this.checkHorizontalWin('X');
-    const verticalOWin = this.checkVerticalWin('O');
+    const horizontalOWin = this.checkHorizontalWin('O');
+
     const verticalXWin = this.checkVerticalWin('X');
+    const verticalOWin = this.checkVerticalWin('O');
 
-    const winnerO = horizontalOWin || verticalOWin;
     const winnerX = horizontalXWin || verticalXWin;
-
-
-
-
+    const winnerO = horizontalOWin || verticalOWin;
 
     //const diagonalWin = this.grid.some(diagonal);
-    if(winnerO) {
-      return 'O';
-    } else if (winnerX) {
+    if(winnerX) {
       return 'X';
+    } else if (winnerO) {
+      return 'O';
     } else {
       return false;
     }
   }
 
+  //Check for a win in any of the rows
   checkHorizontalWin(player) {
     return this.grid.some(row => row.every(element => element === player))
   }
 
+  //Check for a win in any of the columns
   checkVerticalWin(player) {
     for (let col = 0; col < this.grid.length; col++) {
       const currentColumn = []
@@ -83,22 +84,56 @@ class Ttt {
 
 //Testing
 const game = new Ttt();
-console.log(game.emptySlots);
-console.log(game.grid);
-game.announce();
-game.makeAMove(0, 0);
-game.makeAMove(0, 1);
-game.makeAMove(1, 0);
-game.makeAMove(2, 1);
-game.makeAMove(2, 0);
-console.log(game.grid);
-console.log(game.checkWinner());
-game.announce();
+
+// console.log(game.grid);
+// game.makeAMove(0, 0);
+// game.makeAMove(0, 1);
+// game.makeAMove(1, 0);
+// game.makeAMove(2, 1);
+// game.makeAMove(2, 0);
+// console.log(game.grid);
+// console.log(game.checkWinner());
+
 
 
 
 
 //window addeventlistener domloaded
+document.addEventListener('DOMContentLoaded', initiateGame);
+
+function initiateGame() {
+  const mainBoard = document.querySelector("#container");
+  mainBoard.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!target.hasAttribute("src")) {
+      const currentPlayer = game.currentPlayer;
+      e.target.innerHTML = markXOrO(currentPlayer);
+      game.changePlayer();
+    }
+  });
+}
+
+//Each click will place 'O' or 'X' on the clicked empty square
+// function playTheRound(e) {
+//   if (e.target.children.length === 0) {
+//     const currentPlayer = game.currentPlayer;
+//     e.target.innerHTML = markXOrO(currentPlayer);
+//     console.log('here')
+//     // game.changePlayer(); //change later
+//   } else {
+//     console.log('already has children')
+//   }
+// }
+
+function markXOrO(player) {
+  if (player === "O") {
+    return `<img src="https://assets.aaonline.io/Module-DOM-API/formative-project-tic-tac-toe/player-o.svg">`
+  } else {
+    return `<img src="https://assets.aaonline.io/Module-DOM-API/formative-project-tic-tac-toe/player-x.svg">`
+  }
+}
+
+
   //container addeventlistener click
      //if current location is not null
        //currentplayer
