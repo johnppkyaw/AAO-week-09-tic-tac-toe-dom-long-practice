@@ -4,6 +4,7 @@ class Ttt {
   constructor() {
     //first player will be X;
     this.currentPlayer = "X";
+    this.otherPlayer = "O";
     this.grid = this.createGrid();
     this.emptySlots = 9;
     this.winner = false;
@@ -35,8 +36,10 @@ class Ttt {
   changePlayer() {
     if(this.currentPlayer === "O") {
       this.currentPlayer = "X";
+      this.otherPlayer = "O"
     } else {
       this.currentPlayer = "O";
+      this.otherPlayer = "X"
     }
     return `It's now player ${this.currentPlayer}'s turn.`;
   }
@@ -120,6 +123,7 @@ const game = new Ttt();
 //window addeventlistener domloaded
 let mainBoard;
 let newGameButton;
+let giveUpButton;
 
 document.addEventListener('DOMContentLoaded', initiateGame);
 
@@ -130,6 +134,9 @@ function initiateGame() {
   newGameButton = document.querySelector("#new-game");
   newGameButton.disabled = true;
   newGameButton.addEventListener('click', createNewGame);
+
+  giveUpButton = document.querySelector("#give-up");
+  giveUpButton.addEventListener('click', giveUpGame);
 }
 
 //fill the square
@@ -155,16 +162,18 @@ function playTheRound(target) {
   if(game.winner) {
     endCurrentGame(`Winner: ${game.winner}`)
     newGameButton.disabled = false;
+    giveUpButton.disabled = true;
   }
 
   //when all squares are filled, check if there is a winner or a tie
   if(game.emptySlots === 0) {
     if(game.winner) {
-      endCurrentGame(`Winner ${game.winner}`)
+      endCurrentGame(`Winner: ${game.winner}`)
     } else {
       endCurrentGame(`Winner: None`)
     }
     newGameButton.disabled = false;
+    giveUpButton.disabled = true;
   }
 }
 
@@ -220,6 +229,9 @@ function createNewGame(e) {
     //after clicking it, disable it again
     e.target.disabled = true;
 
+    //enable the give up button;
+    giveUpButton.disabled = false;
+
     //remove status from previous game in h1 and hide it
     const h1 = document.querySelector('h1');
     h1.textContent = "HIDDEN";
@@ -239,4 +251,12 @@ function createNewGame(e) {
     //add the event listener again to the main board
     mainBoard.addEventListener('click', fillTheSquare);
   }
+}
+
+//Give up the game
+function giveUpGame(e) {
+  e.preventDefault();
+  endCurrentGame(`Winner: ${game.otherPlayer}`)
+  giveUpButton.disabled = true;
+  newGameButton.disabled = false;
 }
