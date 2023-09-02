@@ -18,7 +18,7 @@ class Ttt {
     const grid = [];
     for(let row = 0; row < 3; row++) {
       const currentRow = [];
-      for(let col = 0; col< 3; col++) {
+      for(let col = 0; col < 3; col++) {
         currentRow.push(null);
       }
       grid.push(currentRow);
@@ -53,8 +53,6 @@ class Ttt {
 
     const winnerX = horizontalXWin || verticalXWin || diagonalXWin;
     const winnerO = horizontalOWin || verticalOWin || diagonalOWin;
-    console.log(winnerX);
-    console.log(winnerO);
 
     if(winnerX) {
       this.winner = 'X';
@@ -120,11 +118,17 @@ const game = new Ttt();
 
 //UI manipulation
 //window addeventlistener domloaded
+
 document.addEventListener('DOMContentLoaded', initiateGame);
 
 function initiateGame() {
   const mainBoard = document.querySelector("#container");
+  console.log(typeof mainBoard);
   mainBoard.addEventListener('click', playTheRound);
+
+  const newGameButton = document.querySelector("#new-game");
+  newGameButton.disabled = true;
+  newGameButton.addEventListener('click', createNewGame);
 }
 
 //Each click will place 'O' or 'X' on the clicked empty square
@@ -144,6 +148,8 @@ function playTheRound(e) {
     game.checkWinner();
     if(game.winner) {
       endCurrentGame(`Winner: ${game.winner}`)
+      const newGameButton = document.querySelector("#new-game");
+      newGameButton.disabled = false;
     }
 
     //when all squares are filled, check if there is a winner or a tie
@@ -153,9 +159,13 @@ function playTheRound(e) {
       } else {
         endCurrentGame(`Winner: None`)
       }
+      const newGameButton = document.querySelector("#new-game");
+      newGameButton.disabled = false;
     }
   }
 }
+
+
 
 //Helper func that assigns O or X image based on who the current player is
 function markXOrO(player) {
@@ -193,4 +203,38 @@ function endCurrentGame(text) {
   const h1 = document.querySelector('h1');
   h1.textContent = text;
   h1.style.visibility = "visible";
+}
+
+//create a new game
+function createNewGame(e) {
+  //prevent submitting when the button is clicked
+  e.preventDefault();
+
+  const mainBoard = document.querySelector("#container");
+
+  //do the following if the new game button is clickable
+  if(e.target.disabled === false) {
+
+    //after clicking it, disable it again
+    e.target.disabled = true;
+
+    //remove status from previous game in h1 and hide it
+    const h1 = document.querySelector('h1');
+    h1.textContent = "HIDDEN";
+    h1.style.visibility = "hidden";
+
+    //reset game logic from game object
+    game.grid = game.createGrid();
+    game.winner = false;
+    game.emptySlots = 9;
+    game.currentPlayer = "X";
+
+    //reset UI on the squares
+    for(const square of mainBoard.children) {
+      square.innerHTML = "";
+    }
+
+    //add the event listener again to the main board
+    mainBoard.addEventListener('click', playTheRound);
+  }
 }
