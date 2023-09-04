@@ -64,7 +64,7 @@ describe("Phase 7: Saving Game State", function () {
         it("Game state is persisted after a player gives up", function () {
             cy.playGame(0,1,2);
             cy.get("button").contains("Give Up").click();
-            cy.playGame(0,1,2);
+            cy.reload();
 
             cy.get("#square-0").children()
                 .should("have.attr", "src", "https://assets.aaonline.io/Module-DOM-API/formative-project-tic-tac-toe/player-x.svg");
@@ -78,9 +78,10 @@ describe("Phase 7: Saving Game State", function () {
         });
 
         it("Game state is reset when clicking New Game button", function () {
-            cy.log(cy.get("button").contains("New Game"))
+            cy.playGame(0,1,2);
+            cy.get("button").contains("Give Up").click();
+            cy.reload();
             cy.get("button").contains("New Game").click()
-
             cy.get("#square-0 img")
                 .should("not.exist");
             cy.get("#square-1 img")
@@ -91,7 +92,6 @@ describe("Phase 7: Saving Game State", function () {
                 .should("not.exist");
             cy.get("#square-8 img")
                 .should("not.exist");
-
             cy.get("body").contains("Winner: X")
                 .should("not.exist")
         });

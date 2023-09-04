@@ -1,7 +1,7 @@
 // Phase 1: UI meets the minimum specs
 describe("Phase 1: The UI HTML elements meet the minimum specs", function () {
 
-    before(function () {
+    beforeEach(function () {
         cy.visit("public/index.html");
     });
 

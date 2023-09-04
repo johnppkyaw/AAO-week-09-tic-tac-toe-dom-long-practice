@@ -104,6 +104,10 @@ class Ttt {
     }
     return leftDown.every(element => element === player) || leftUp.every(element => element === player);
   }
+
+  isTie() {
+    return this.emptySlots === 0 && !this.winner;
+  }
 }
 
 const game = new Ttt();
@@ -137,13 +141,14 @@ function initiateGame() {
 
   newGameButton.disabled = true;
   giveUpButton.disabled = false;
+  h1.style.visibility = "hidden";
 
   restorePrevState();
 }
 
 //fill the square
 function fillTheSquare(e) {
-  if((e.target.matches('div') && e.target.innerHTML === "") && !e.target.hasAttribute("src")) {
+  if(!game.winner && !game.isTie() && (e.target.matches('div') && e.target.innerHTML === "") && !e.target.hasAttribute("src")) {
     playTheRound(e.target);
   }
 }
@@ -168,12 +173,8 @@ function playTheRound(target) {
   }
 
   //when all squares are filled, check if there is a winner or a tie
-  if(game.emptySlots === 0) {
-    if(game.winner) {
-      endCurrentGame(`Winner: ${game.winner}`)
-    } else {
-      endCurrentGame(`Winner: None`)
-    }
+  if(game.isTie()) {
+    endCurrentGame(`Winner: None`)
     newGameButton.disabled = false;
     giveUpButton.disabled = true;
   }
@@ -181,34 +182,7 @@ function playTheRound(target) {
   saveCurrentState(JSON.stringify(game), mainBoard.innerHTML, h1.textContent, h1.style.visibility, giveUpButton.disabled, newGameButton.disabled);
 }
 
-function saveCurrentState(logicData, uiData, h1Text, h1Visibility) {
-  localStorage.setItem("logicSoFar", logicData);
-  localStorage.setItem("gameSoFar", uiData);
-  localStorage.setItem("h1Text", h1Text);
-  localStorage.setItem("h1Visibility", h1Visibility);
-  localStorage.setItem("giveUpButton", giveUpButton.disabled);
-  localStorage.setItem("newGameButton", newGameButton.disabled);
-}
 
-function restorePrevState() {
-  const logicSaved = JSON.parse(localStorage.getItem("logicSoFar"));
-  if (logicSaved) {
-    game.currentPlayer = logicSaved.currentPlayer;
-    game.otherPlayer = logicSaved.otherPlayer;
-    game.grid = logicSaved.grid;
-    game.emptySlots = logicSaved.emptySlots;
-    game.winner = logicSaved.winner;
-    mainBoard.innerHTML = localStorage.getItem("gameSoFar");
-    h1.textContent = localStorage.getItem("h1Text");
-    h1.style.visibility = localStorage.getItem("h1Visibility");
-    giveUpButton.disabled = JSON.parse(localStorage.getItem("giveUpButton"));
-    newGameButton.disabled = JSON.parse(localStorage.getItem("newGameButton"));
-  }
-}
-
-function removeCurrentState() {
-  localStorage.clear();
-}
 
 
 //Helper func that assigns O or X image based on who the current player is
@@ -291,4 +265,39 @@ function giveUpGame(e) {
   endCurrentGame(`Winner: ${game.otherPlayer}`)
   giveUpButton.disabled = true;
   newGameButton.disabled = false;
+
+  saveCurrentState(JSON.stringify(game), mainBoard.innerHTML, h1.textContent, h1.style.visibility, giveUpButton.disabled, newGameButton.disabled);
+}
+
+
+//Saves the game
+function saveCurrentState(logicData, uiData, h1Text, h1Visibility, giveUpButtonDisabled, newGameButtonDisabled) {
+  localStorage.setItem("logicSoFar", logicData);
+  localStorage.setItem("gameSoFar", uiData);
+  localStorage.setItem("h1Text", h1Text);
+  localStorage.setItem("h1Visibility", h1Visibility);
+  localStorage.setItem("giveUpButton", giveUpButtonDisabled);
+  localStorage.setItem("newGameButton", newGameButtonDisabled);
+}
+
+//Restore the game after refresh or when window reopen
+function restorePrevState() {
+  const logicSaved = JSON.parse(localStorage.getItem("logicSoFar"));
+  if (logicSaved) {
+    game.currentPlayer = logicSaved.currentPlayer;
+    game.otherPlayer = logicSaved.otherPlayer;
+    game.grid = logicSaved.grid;
+    game.emptySlots = logicSaved.emptySlots;
+    game.winner = logicSaved.winner;
+    mainBoard.innerHTML = localStorage.getItem("gameSoFar");
+    h1.textContent = localStorage.getItem("h1Text");
+    h1.style.visibility = localStorage.getItem("h1Visibility");
+    giveUpButton.disabled = JSON.parse(localStorage.getItem("giveUpButton"));
+    newGameButton.disabled = JSON.parse(localStorage.getItem("newGameButton"));
+  }
+}
+
+//Deletes game state
+function removeCurrentState() {
+  localStorage.clear();
 }
