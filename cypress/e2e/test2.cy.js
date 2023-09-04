@@ -1,7 +1,7 @@
 // Phase 2: Tracking Clicks
 describe("Phase 2: Tracking Clicks", function () {
 
-    before(function () {
+    beforeEach(function () {
         cy.visit("public/index.html");
     });
 
