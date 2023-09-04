@@ -121,27 +121,29 @@ const game = new Ttt();
 
 //UI manipulation
 //window addeventlistener domloaded
-let mainBoard;
-let newGameButton;
-let giveUpButton;
+let h1, mainBoard, newGameButton, giveUpButton;
 
 document.addEventListener('DOMContentLoaded', initiateGame);
 
 function initiateGame() {
+  h1 = document.querySelector('h1');
   mainBoard = document.querySelector("#container");
-  mainBoard.addEventListener('click', fillTheSquare);
-
   newGameButton = document.querySelector("#new-game");
-  newGameButton.disabled = true;
-  newGameButton.addEventListener('click', createNewGame);
-
   giveUpButton = document.querySelector("#give-up");
+
+  mainBoard.addEventListener('click', fillTheSquare);
+  newGameButton.addEventListener('click', createNewGame);
   giveUpButton.addEventListener('click', giveUpGame);
+
+  newGameButton.disabled = true;
+  giveUpButton.disabled = false;
+
+  restorePrevState();
 }
 
 //fill the square
 function fillTheSquare(e) {
-  if(e.target.matches('div') && !e.target.hasAttribute("src")) {
+  if((e.target.matches('div') && e.target.innerHTML === "") && !e.target.hasAttribute("src")) {
     playTheRound(e.target);
   }
 }
@@ -175,8 +177,38 @@ function playTheRound(target) {
     newGameButton.disabled = false;
     giveUpButton.disabled = true;
   }
+
+  saveCurrentState(JSON.stringify(game), mainBoard.innerHTML, h1.textContent, h1.style.visibility, giveUpButton.disabled, newGameButton.disabled);
 }
 
+function saveCurrentState(logicData, uiData, h1Text, h1Visibility) {
+  localStorage.setItem("logicSoFar", logicData);
+  localStorage.setItem("gameSoFar", uiData);
+  localStorage.setItem("h1Text", h1Text);
+  localStorage.setItem("h1Visibility", h1Visibility);
+  localStorage.setItem("giveUpButton", giveUpButton.disabled);
+  localStorage.setItem("newGameButton", newGameButton.disabled);
+}
+
+function restorePrevState() {
+  const logicSaved = JSON.parse(localStorage.getItem("logicSoFar"));
+  if (logicSaved) {
+    game.currentPlayer = logicSaved.currentPlayer;
+    game.otherPlayer = logicSaved.otherPlayer;
+    game.grid = logicSaved.grid;
+    game.emptySlots = logicSaved.emptySlots;
+    game.winner = logicSaved.winner;
+    mainBoard.innerHTML = localStorage.getItem("gameSoFar");
+    h1.textContent = localStorage.getItem("h1Text");
+    h1.style.visibility = localStorage.getItem("h1Visibility");
+    giveUpButton.disabled = JSON.parse(localStorage.getItem("giveUpButton"));
+    newGameButton.disabled = JSON.parse(localStorage.getItem("newGameButton"));
+  }
+}
+
+function removeCurrentState() {
+  localStorage.clear();
+}
 
 
 //Helper func that assigns O or X image based on who the current player is
@@ -213,7 +245,6 @@ function findCol(number) {
 //Helper func - ending the current game
 function endCurrentGame(text) {
   mainBoard.removeEventListener('click', fillTheSquare);
-  const h1 = document.querySelector('h1');
   h1.textContent = text;
   h1.style.visibility = "visible";
 }
@@ -222,6 +253,7 @@ function endCurrentGame(text) {
 function createNewGame(e) {
   //prevent submitting when the button is clicked
   e.preventDefault();
+  removeCurrentState();
 
   //do the following if the new game button is clickable
   if(e.target.disabled === false) {
@@ -233,7 +265,6 @@ function createNewGame(e) {
     giveUpButton.disabled = false;
 
     //remove status from previous game in h1 and hide it
-    const h1 = document.querySelector('h1');
     h1.textContent = "HIDDEN";
     h1.style.visibility = "hidden";
 
@@ -255,6 +286,7 @@ function createNewGame(e) {
 
 //Give up the game
 function giveUpGame(e) {
+  console.log("reached here");
   e.preventDefault();
   endCurrentGame(`Winner: ${game.otherPlayer}`)
   giveUpButton.disabled = true;

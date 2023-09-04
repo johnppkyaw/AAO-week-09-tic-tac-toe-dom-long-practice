@@ -78,6 +78,7 @@ describe("Phase 7: Saving Game State", function () {
         });
 
         it("Game state is reset when clicking New Game button", function () {
+            cy.log(cy.get("button").contains("New Game"))
             cy.get("button").contains("New Game").click()
 
             cy.get("#square-0 img")
